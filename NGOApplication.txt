@@ -1,0 +1,408 @@
+import mongoose from 'mongoose';
+
+const applicantSchema = new mongoose.Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    passportNumber: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const organizationContactSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    website: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const operationalLocationSchema = new mongoose.Schema(
+  {
+    region: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Region',
+      required: true,
+    },
+
+    district: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'District',
+      required: true,
+    },
+
+    village: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const registrationFeeSchema = new mongoose.Schema(
+  {
+    amount: {
+      type: Number,
+      min: 0,
+      default: 500,
+    },
+
+    currency: {
+      type: String,
+      uppercase: true,
+      trim: true,
+      default: 'USD',
+    },
+
+    revenueCode: {
+      type: String,
+      trim: true,
+      default: '142212',
+    },
+
+    paymentReference: {
+      type: String,
+      trim: true,
+    },
+
+    paymentDate: {
+      type: Date,
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: [
+        'Pending',
+        'Paid',
+        'Verified',
+        'Rejected',
+      ],
+      default: 'Pending',
+    },
+
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+
+    verifiedAt: {
+      type: Date,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const workflowHistorySchema = new mongoose.Schema(
+  {
+    action: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    note: {
+      type: String,
+      trim: true,
+    },
+
+    fromStatus: {
+      type: String,
+    },
+
+    toStatus: {
+      type: String,
+    },
+
+    fromStage: {
+      type: String,
+    },
+
+    toStage: {
+      type: String,
+    },
+
+    actor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+
+    actedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const ngoApplicationSchema = new mongoose.Schema(
+  {
+    applicationNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
+    },
+
+    applicationType: {
+      type: String,
+      enum: [
+        'New Registration',
+        'Renewal',
+      ],
+      default: 'New Registration',
+    },
+
+    organizationName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    organizationType: {
+      type: String,
+      enum: [
+        'Local NGO',
+        'International NGO',
+        'Consultant',
+        'Civil Society Organization',
+        'Community Based Organization',
+        'Network',
+        'Association',
+      ],
+      required: true,
+      default: 'Local NGO',
+    },
+
+    establishmentDate: {
+      type: Date,
+      required: true,
+    },
+
+    registrationCountry: {
+      type: String,
+      trim: true,
+      default: 'Somalia',
+    },
+
+    applicant: {
+      type: applicantSchema,
+      required: true,
+    },
+
+    organizationContact: {
+      type: organizationContactSchema,
+      required: true,
+    },
+
+    sectors: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+
+    activityAreas: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+
+    operationalLocations: [
+      operationalLocationSchema,
+    ],
+
+    registrationFee: {
+      type: registrationFeeSchema,
+      default: () => ({}),
+    },
+
+    existingNGO: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'NGO',
+    },
+
+    previousRegistrationNumber: {
+      type: String,
+      uppercase: true,
+      trim: true,
+    },
+
+    status: {
+      type: String,
+      enum: [
+        'Draft',
+        'Submitted',
+        'Under Review',
+        'Returned for Revision',
+        'Approved',
+        'Rejected',
+        'Cancelled',
+      ],
+      default: 'Draft',
+    },
+
+    approvalStage: {
+      type: String,
+      enum: [
+  'Draft',
+  'Submitted',
+  'Document Verification',
+  'Registration Review',
+  'Awaiting Registration Fee',
+  'Payment Verification',
+  'Admin/HR & Finance Review',
+  'Director General Review',
+  'Approved',
+  'Rejected',
+],
+      default: 'Draft',
+    },
+
+    workflowHistory: [
+      workflowHistorySchema,
+    ],
+
+    submittedAt: {
+      type: Date,
+    },
+
+    reviewedAt: {
+      type: Date,
+    },
+
+    approvedAt: {
+      type: Date,
+    },
+
+    rejectedAt: {
+      type: Date,
+    },
+
+    rejectionReason: {
+      type: String,
+      trim: true,
+    },
+
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+ngoApplicationSchema.index({
+  organizationName: 'text',
+  applicationNumber: 'text',
+  'applicant.fullName': 'text',
+  'applicant.email': 'text',
+});
+
+ngoApplicationSchema.index({
+  status: 1,
+  approvalStage: 1,
+});
+
+ngoApplicationSchema.index({
+  applicationType: 1,
+  createdAt: -1,
+});
+
+ngoApplicationSchema.index({
+  'operationalLocations.region': 1,
+  'operationalLocations.district': 1,
+});
+
+ngoApplicationSchema.index({
+  existingNGO: 1,
+  applicationType: 1,
+});
+
+ngoApplicationSchema.pre(
+  'validate',
+  function validateRenewal(next) {
+    if (
+      this.applicationType === 'Renewal' &&
+      !this.existingNGO &&
+      !this.previousRegistrationNumber
+    ) {
+      this.invalidate(
+        'previousRegistrationNumber',
+        'Renewal applications require an existing NGO or previous registration number.'
+      );
+    }
+
+    next();
+  }
+);
+
+export const NGOApplication = mongoose.model(
+  'NGOApplication',
+  ngoApplicationSchema
+);
