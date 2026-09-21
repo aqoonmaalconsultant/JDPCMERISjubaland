@@ -19,6 +19,7 @@ pnpm-debug.log*
 # OS / Editor
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
 .idea/
 
@@ -29,11 +30,20 @@ uploads/
 *.tmp
 *.temp
 
-# OneDrive / system noise
-desktop.ini
-
 # Development backups / temporary project files
 backend/src/controllers/*.backup*.js
 backend/src/controllers/*.before-*.js
 backend/error.txt
 project-structure.zip
+
+# Local archive / working files
+*.zip
+*.bak
+
+# Runtime / cache
+.cache/
+coverage/
+
+# Optional local test artifacts
+test-results/
+playwright-report/
